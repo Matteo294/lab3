@@ -1,0 +1,10 @@
+1-5: amplificatore invertente
+6-10: amplificatore non invertente
+11-12: amp diff con i due Vin uguali (Vout non preso perché era costante a 0 +- 1 mV
+13-14: amp diff con i due Vin sfasati di 20 gradi (forme d'onda dei due Vin)
+15-16: amp diff con i due Vin sfasati di 20 gradi (forma d'onda di Vout)
+battimento: foto 1
+17-18: derivata del seno
+19-20: derivata del triangolo
+21-22: derivata dell'onda quadra
+23-27: curva diodo
