@@ -8,10 +8,10 @@ from shockley_fit import shockley_fit, shockley
 
 # Set True to display related figures
 flags_figures = {
-                    'inverting': False, 
-                    'non-inverting': False, 
-                    'differential': False,
-                    'derivator': False,
+                    'inverting': True, 
+                    'non-inverting': True, 
+                    'differential': True,
+                    'derivator': True,
                     'diode': True
                 }
 
@@ -105,7 +105,7 @@ if flags_figures['derivator']:
 t, V1, V2 = dataFix("Data/Newfile23.csv")
 I = (V2/1e3) * 1e3 # 1 kOhm resistance, transfom I in mA
 n, Is = shockley_fit(I, V1)
-print("Shockley params:   n =", n, "  Is =", Is)
+print("Shockley params:   n =", n, "  Is =", Is, "mA")
 if flags_figures['diode']:
     # Plot measured data
     xline = np.linspace(min(V1), max(V1), 1000)
