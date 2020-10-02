@@ -13,17 +13,18 @@ RETURNS:
 import numpy as np
 from libphysics import *
 
-def dataFix(data_file, ncols, errs=False):
+def dataFix(data_file, errs=False):
 
     filetoread = os.path.join(data_file)
     
     # Assuming to find "dt" and "t_offset" in the second row, 3rd and 4th columns
     with open(filetoread, 'r') as f:
         lines = f.readlines()
+        ncols = len(lines[2].split(',')) - 1 # -1 because of the extra "," at the end of the line in the csv
         line = lines[1]
         row = line.split(",")
-        t_offset = float(row[3])
-        dt = float(row[4])
+        t_offset = float(row[ncols])
+        dt = float(row[ncols+1])
     
     # Assuming time in the 1st column and assuming data starting from 3rd row
     data = readCSV(data_file, skiprows=2, cols=range(ncols))
