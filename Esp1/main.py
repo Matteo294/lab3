@@ -4,13 +4,14 @@ from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 from data_fix import dataFix
 import sys
+from shockley_fit import shockley_fit, shockley
 
 # Set True to display related figures
 flags_figures = {
-                    'inverting': True, 
-                    'non-inverting': True, 
-                    'differential': True,
-                    'derivator': True,
+                    'inverting': False, 
+                    'non-inverting': False, 
+                    'differential': False,
+                    'derivator': False,
                     'diode': True
                 }
 
@@ -102,12 +103,17 @@ if flags_figures['derivator']:
 
 ''' Diode curve - Shockley '''
 t, V1, V2 = dataFix("Data/Newfile23.csv")
-I = V2/1e3 # 1 kOhm resistance
+I = (V2/1e3) * 1e3 # 1 kOhm resistance, transfom I in mA
+n, Is = shockley_fit(I, V1)
+print("Shockley params:   n =", n, "  Is =", Is)
 if flags_figures['diode']:
     # Plot measured data
+    xline = np.linspace(min(V1), max(V1), 1000)
+    Iline = shockley(xline, n=n, Is=Is)
     plt.plot(V1, I, label='Vout')
-    plt.xlabel('t [s]')
-    plt.ylabel('V [V]')
+    plt.plot(xline, Iline, label='Fit')
+    plt.xlabel(' [V]')
+    plt.ylabel('I [mA]')
     plt.grid()
     plt.legend()
     plt.show()
