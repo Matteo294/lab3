@@ -5,6 +5,7 @@ import matplotlib.image as mpimg
 from data_fix import dataFix
 import sys
 from shockley_fit import shockley_fit, shockley
+from sinFit import sinFit
 
 # Set True to display related figures
 flags_figures = {
@@ -15,8 +16,14 @@ flags_figures = {
                     'diode': True
                 }
 
+print()
+
 ''' Inverting amplifier '''
 t, V1, V2= dataFix("Data/Newfile1.csv")
+V1_ampl = sinFit(t, V1, f=1e3, showplots=True)
+V2_ampl = sinFit(t, V2, f=1e3, showplots=True)
+print("In wave Vpp:", 2*V1_ampl)
+print("Out wave Vpp:", 2*V2_ampl)
 if flags_figures['inverting']:
     # Plot measured data
     plt.plot(t, V1, label='Vin')
@@ -27,8 +34,14 @@ if flags_figures['inverting']:
     plt.legend()
     plt.show()
 
+print()
+
 ''' Non-inverting amplifier '''
 t, V1, V2 = dataFix("Data/Newfile6.csv")
+V1_ampl = sinFit(t, V1, f=1e3, showplots=True)
+V2_ampl = sinFit(t, V2, f=1e3, showplots=True)
+print("In wave Vpp:", 2*V1_ampl)
+print("Out wave Vpp:", 2*V2_ampl)
 if flags_figures['non-inverting']:
     # Plot measured data
     plt.plot(t, V1, label='Vin')
@@ -39,15 +52,22 @@ if flags_figures['non-inverting']:
     plt.legend()
     plt.show()
 
+print()
+
 ''' Differential amplifier '''
 ### Same input waveforms
 # Vin1, Vin2 20 deg shift
 t, V1, V2 = dataFix("Data/Newfile13.csv")
+# Vout
+t, V = dataFix("Data/Newfile15.csv")
+V1_ampl = sinFit(t, V1, f=1e3, showplots=True)
+V2_ampl = sinFit(t, V2, f=1e3, showplots=True)
+V_ampl = sinFit(t, V, f=1e3, showplots=True)
+print("In waves Vpp:", 2*V1_ampl, 2*V2_ampl)
+print("Out wave Vpp:", 2*V_ampl)
 if flags_figures['differential']:
     plt.plot(t, V1, label='Vin1')
     plt.plot(t, V2, label='Vin2')
-    # Vout
-    t, V = dataFix("Data/Newfile15.csv")
     plt.plot(t, V, label='Vout')
     plt.xlabel('t [s]')
     plt.ylabel('V [V]')
@@ -60,7 +80,9 @@ if flags_figures['differential']:
     plt.imshow(beat_img)
     plt.show()
 
-''' Derivator '''
+print()
+
+''' Differentiator '''
 ### Input sine waveform
 t, V1, V2 = dataFix("Data/Newfile17.csv")
 if flags_figures['derivator']:
@@ -100,6 +122,8 @@ if flags_figures['derivator']:
     plt.figure()
     plt.imshow(triangle_img)
     plt.show()
+
+print()
 
 ''' Diode curve - Shockley '''
 t, V1, V2 = dataFix("Data/Newfile23.csv")

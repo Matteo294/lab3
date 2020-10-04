@@ -30,9 +30,10 @@ def dataFix(data_file, errs=False):
     data = readCSV(data_file, skiprows=2, cols=range(ncols))
     data = numpify(data)
     data = np.transpose(data)
-    # Translate time, starting from 0
+    # Fix time values
     t = data[:,0]
     t = t_offset + t*dt
+    data[:,0] = t
     # If errs flag is True adds uncertainties to data matrix
     if errs:
         dV = np.zeros((t.shape[0], ncols-1))
