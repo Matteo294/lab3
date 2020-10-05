@@ -19,11 +19,13 @@ flags_figures = {
 print()
 
 ''' Inverting amplifier '''
+print("# Inverting amplifier")
 t, V1, V2= dataFix("Data/Newfile1.csv")
 V1_ampl = sinFit(t, V1, f=1e3, showplots=True)
 V2_ampl = sinFit(t, V2, f=1e3, showplots=True)
 print("In wave Vpp:", 2*V1_ampl)
 print("Out wave Vpp:", 2*V2_ampl)
+print("G =", V2_ampl/V1_ampl) 
 if flags_figures['inverting']:
     # Plot measured data
     plt.plot(t, V1, label='Vin')
@@ -37,11 +39,13 @@ if flags_figures['inverting']:
 print()
 
 ''' Non-inverting amplifier '''
+print("# Non-inverting amplifier")
 t, V1, V2 = dataFix("Data/Newfile6.csv")
 V1_ampl = sinFit(t, V1, f=1e3, showplots=True)
 V2_ampl = sinFit(t, V2, f=1e3, showplots=True)
 print("In wave Vpp:", 2*V1_ampl)
 print("Out wave Vpp:", 2*V2_ampl)
+print("G =", V2_ampl/V1_ampl)
 if flags_figures['non-inverting']:
     # Plot measured data
     plt.plot(t, V1, label='Vin')
@@ -55,6 +59,7 @@ if flags_figures['non-inverting']:
 print()
 
 ''' Differential amplifier '''
+print("# Differential amplifier")
 ### Same input waveforms
 # Vin1, Vin2 20 deg shift
 t, V1, V2 = dataFix("Data/Newfile13.csv")
@@ -83,6 +88,7 @@ if flags_figures['differential']:
 print()
 
 ''' Differentiator '''
+print("# Differentiator")
 ### Input sine waveform
 t, V1, V2 = dataFix("Data/Newfile17.csv")
 if flags_figures['derivator']:
@@ -126,6 +132,7 @@ if flags_figures['derivator']:
 print()
 
 ''' Diode curve - Shockley '''
+print("# Diode")
 t, V1, V2 = dataFix("Data/Newfile23.csv")
 I = (V2/1e3) * 1e3 # 1 kOhm resistance, transfom I in mA
 n, Is = shockley_fit(I, V1)

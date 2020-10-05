@@ -39,6 +39,7 @@ def sinFit(t, V, f, dV=None, showplots=False):
 		plt.plot(t, C + A*M[:,1] + B*M[:,2], label='fit')
 		plt.legend()
 		plt.grid()
+		plt.title("Sin fit")
 		plt.show()
 	if isinstance(ampl, np.ndarray):
 		ampl = ampl[0]
