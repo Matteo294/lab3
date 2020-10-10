@@ -9,11 +9,11 @@ from sinFit import sinFit
 
 # Set True to display related figures
 flags_figures = {
-                    'inverting': True, 
-                    'non-inverting': True, 
+                    'inverting': False, 
+                    'non-inverting': False, 
                     'differential': True,
-                    'derivator': True,
-                    'diode': True
+                    'derivator': False,
+                    'diode': False 
                 }
 
 print()
@@ -21,8 +21,8 @@ print()
 ''' Inverting amplifier '''
 print("# Inverting amplifier")
 t, V1, V2= dataFix("Data/Newfile1.csv")
-V1_ampl = sinFit(t, V1, f=1e3, showplots=True)
-V2_ampl = sinFit(t, V2, f=1e3, showplots=True)
+V1_ampl = sinFit(t, V1, f=1e3)
+V2_ampl = sinFit(t, V2, f=1e3)
 print("In wave Vpp:", 2*V1_ampl)
 print("Out wave Vpp:", 2*V2_ampl)
 print("G =", V2_ampl/V1_ampl) 
@@ -41,8 +41,8 @@ print()
 ''' Non-inverting amplifier '''
 print("# Non-inverting amplifier")
 t, V1, V2 = dataFix("Data/Newfile6.csv")
-V1_ampl = sinFit(t, V1, f=1e3, showplots=True)
-V2_ampl = sinFit(t, V2, f=1e3, showplots=True)
+V1_ampl = sinFit(t, V1, f=1e3)
+V2_ampl = sinFit(t, V2, f=1e3)
 print("In wave Vpp:", 2*V1_ampl)
 print("Out wave Vpp:", 2*V2_ampl)
 print("G =", V2_ampl/V1_ampl)
@@ -65,9 +65,9 @@ print("# Differential amplifier")
 t, V1, V2 = dataFix("Data/Newfile13.csv")
 # Vout
 t, V = dataFix("Data/Newfile15.csv")
-V1_ampl = sinFit(t, V1, f=1e3, showplots=True)
-V2_ampl = sinFit(t, V2, f=1e3, showplots=True)
-V_ampl = sinFit(t, V, f=1e3, showplots=True)
+V1_ampl = sinFit(t, V1, f=1e3)
+V2_ampl = sinFit(t, V2, f=1e3)
+V_ampl = sinFit(t, V, f=1e3)
 print("In waves Vpp:", 2*V1_ampl, 2*V2_ampl)
 print("Out wave Vpp:", 2*V_ampl)
 if flags_figures['differential']:
@@ -79,7 +79,7 @@ if flags_figures['differential']:
     plt.grid()
     plt.legend()
     plt.show()
-    # Display picture of the beat phenomena
+    # Display picture of the beat phenomenon
     beat_img = mpimg.imread('Data/1.png')
     plt.figure()
     plt.imshow(beat_img)
@@ -91,6 +91,10 @@ print()
 print("# Differentiator")
 ### Input sine waveform
 t, V1, V2 = dataFix("Data/Newfile17.csv")
+V1_ampl = sinFit(t, V1, f=1e3)
+V2_ampl = sinFit(t, V2, f=1e3)
+print("In wave Vpp:", 2*V1_ampl)
+print("Out wave Vpp:", 2*V2_ampl)
 if flags_figures['derivator']:
     # Plot measured data
     plt.plot(t, V1, label='Vin')
