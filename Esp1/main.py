@@ -11,8 +11,8 @@ from sinFit import sinFit
 flags_figures = {
                     'inverting': False, 
                     'non-inverting': False, 
-                    'differential': True,
-                    'derivator': False,
+                    'differential': False,
+                    'derivator': True,
                     'diode': False 
                 }
 
@@ -92,7 +92,7 @@ print("# Differentiator")
 ### Input sine waveform
 t, V1, V2 = dataFix("Data/Newfile17.csv")
 V1_ampl = sinFit(t, V1, f=1e3)
-V2_ampl = sinFit(t, V2, f=1e3)
+V2_ampl = sinFit(t, V2, f=1e3, showplots=True)
 print("In wave Vpp:", 2*V1_ampl)
 print("Out wave Vpp:", 2*V2_ampl)
 if flags_figures['derivator']:
