@@ -12,8 +12,8 @@ flags_figures = {
                     'inverting': False, 
                     'non-inverting': False, 
                     'differential': False,
-                    'derivator': True,
-                    'diode': False 
+                    'derivator': False,
+                    'diode': True 
                 }
 
 print()
@@ -92,7 +92,7 @@ print("# Differentiator")
 ### Input sine waveform
 t, V1, V2 = dataFix("Data/Newfile17.csv")
 V1_ampl = sinFit(t - min(t), V1, f=1e3)
-V2_ampl = sinFit(t - min(t), V2, f=1e3, showplots=True)
+V2_ampl = sinFit(t - min(t), V2, f=1e3)
 print("In wave amplitude:", V1_ampl)
 print("Out wave amplitude:", V2_ampl)
 if flags_figures['derivator']:
@@ -145,8 +145,8 @@ if flags_figures['diode']:
     # Plot measured data
     xline = np.linspace(min(V1), max(V1), 1000)
     Iline = shockley(xline, n=n, Is=Is)
-    plt.plot(V1, I, label='Vout')
-    plt.plot(xline, Iline, label='Fit')
+    plt.plot(V1, I, '.', color='crimson', markersize=6, label='Vout')
+    plt.plot(xline, Iline, linewidth=2.5, color='darkcyan', label='Fit')
     plt.xlabel(' [V]')
     plt.ylabel('I [mA]')
     plt.grid()
