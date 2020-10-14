@@ -1,0 +1,1 @@
+Vout3dB = 2.8V Vpp (se Vin = 4V Vpp)
