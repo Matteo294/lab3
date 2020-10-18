@@ -38,8 +38,10 @@ if parts['A']:
     Zeq1 = lambda w: parallelo(Z_C(w), (R + Zeq2(w)))
     Zeq2 = lambda w: parallelo(Z_C(w), Z_osc(w))
     Z_out = lambda w: parallelo(Z_C(w), R + parallelo(R, Z_C(w)))
+
     # Transfer function
-    H_teo = lambda w: Zeq1(w)/(Zeq1(w)+R) * Zeq2(w)/(Zeq2(w)+R)
+    H_teo = lambda w,s: 1/(1 + 3*R*s*C + (R*s*C)**2)  # devo ancora metterci l'osc
+
     # Getting data from csv
     data = readCSV(file_confA, skiprows=1, cols=[0,1,2,3])
     f = data[0]
@@ -47,19 +49,23 @@ if parts['A']:
     Vout = data[2]
     phi = -data[3]*f * 360 # phase = deltaT/T * 360
     fig = bodeplot(f, Amp=Vout/Vin, Phase=phi, deg=True)
+
     # Model
     fline = np.logspace(0, 3, 1000)
-    Hline = H_teo(2*np.pi*fline)
+    Hline = H_teo(2*np.pi*fline, 1j*2*np.pi*fline)
     Hline_abs = np.absolute(Hline)
     Hline_phase = np.angle(Hline) * 180/np.pi
     fig = bodeplot(fline, Amp=Hline_abs, Phase=Hline_phase, figure=fig, asline=True)
+    plt.tight_layout()
     plt.show()
+
     # Output impedance
     fig = bodeplot(fline, Amp=Z_out(2*np.pi*fline), Phase=Hline_phase, asline=True)
     ax1, ax2 = fig.axes
     ax1.set_ylabel(r"Z [$\Omega$]")
     ax1.set_title(r"$Z_{out}$")
-    plt.show()
+    plt.tight_layout()
+    # plt.show()
 
 
 
@@ -70,8 +76,10 @@ if parts['B']:
     Z_C = lambda w: 1/(1j*w*C)
     H0 = lambda w: Z_C(w) / (Z_C(w) + R) # Just a useful intermediate step
     Zeq1 = lambda w: parallelo(Z_C(w), Z_osc(w))
+    
     # Transfer function
     H_teo = lambda w: H0(w) * Zeq1(w)/(Zeq1(w)+R)
+
     # Getting data from csv
     data = readCSV(file_confB, skiprows=1, cols=[0,1,2,3])
     f = data[0]
@@ -79,18 +87,22 @@ if parts['B']:
     Vout = data[2]
     phi = -data[3]*f * 360 # phase = deltaT/T * 360
     fig = bodeplot(f, Amp=Vout/Vin, Phase=phi, deg=True)
+
      # Model
     fline = np.logspace(0, 3, 1000)
     Hline = H_teo(2*np.pi*fline)
     Hline_abs = np.absolute(Hline)
     Hline_phase = np.angle(Hline) * 180/np.pi
     fig = bodeplot(fline, Amp=Hline_abs, Phase=Hline_phase, figure=fig, asline=True)
+    plt.tight_layout()
     plt.show()
+
     # Output impedance
     fig = bodeplot(fline, Amp=np.absolute(Zeq1(2*np.pi*fline)), Phase=np.angle(Zeq1(2*np.pi*fline)), asline=True)
     ax1, ax2 = fig.axes
     ax1.set_ylabel(r"Z [$\Omega$]")
     ax1.set_title(r"$Z_{out}$")
+    plt.tight_layout()
     plt.show()
 
 
@@ -102,6 +114,7 @@ if parts['C']:
     H0 = lambda w: Z_C(w) / (Z_C(w) + R) # Just a useful intermediate step
     # Transfer function
     H_teo = lambda w: np.power(H0(w), 2)
+
     # Getting data from csv
     data = readCSV(file_confC, skiprows=1, cols=[0,1,2,3])
     f = data[0]
@@ -109,16 +122,20 @@ if parts['C']:
     Vout = data[2]
     phi = -data[3]*f * 360 # phase = deltaT/T * 360
     fig = bodeplot(f, Amp=Vout/Vin, Phase=phi, deg=True)
+
      # Model
     fline = np.logspace(0, 3, 1000)
     Hline = H_teo(2*np.pi*fline)
     Hline_abs = np.absolute(Hline)
     Hline_phase = np.angle(Hline) * 180/np.pi
     fig = bodeplot(fline, Amp=Hline_abs, Phase=Hline_phase, figure=fig, asline=True)
+    plt.tight_layout()
     plt.show()
+
     # Output impedance
     fig = bodeplot(fline, Amp=np.absolute(Z_osc(2*np.pi*fline)), Phase=np.angle(Z_osc(2*np.pi*fline)), asline=True)
     ax1, ax2 = fig.axes
     ax1.set_ylabel(r"Z [$\Omega$]")
     ax1.set_title(r"$Z_{out}$")
+    plt.tight_layout()
     plt.show()
