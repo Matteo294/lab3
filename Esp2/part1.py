@@ -135,18 +135,29 @@ if parts['C']:
     phi = -data[3]*f * 360 # phase = deltaT/T * 360
     fig = bodeplot(f, Amp=Vout/Vin, Phase=phi, deg=True)
 
-     # Model
+    # Model
     fline = np.logspace(0, log10(2000), 1000)
     Hline = H_teo(2*np.pi*fline)
     Hline_abs = np.absolute(Hline)
     Hline_phase = np.angle(Hline) * 180/np.pi
     fig = bodeplot(fline, Amp=Hline_abs, Phase=Hline_phase, figure=fig, asline=True)
+
+    # Slope estimation
+    x = f[-3:]
+    y = 20*np.log10(Vout[-3:]/Vin[-3:])
+    M = np.ones((y.size, 2))
+    M[:,1] = y
+    params = fit(lambda x,p1,p2: p1+np.log10(x)*p2, x, y)
+    print(params[0])
+    xline = np.linspace(min(x), max(x), 1000)
     
     # plot stile
     ax = fig.axes[0]
     handles,_ = ax.get_legend_handles_labels()
     fig.legend(handles, labels=["Data", "Model"], loc ='lower center', ncol=2)
     fig.subplots_adjust(hspace=0.4, left=0.1)
+    ax.plot(xline, params[0][0] + params[0][1]*np.log10(xline), '--')
+    plt.plot()
     plt.tight_layout()
     plt.show()
 
@@ -157,17 +168,4 @@ if parts['C']:
     ax1.set_ylabel(r"Z [$\Omega$]")
     ax1.set_title(r"$Z_{out}$")
     plt.tight_layout()
-    plt.show()
-
-    # Slope estimation
-    x = np.log10(f[-3:])
-    y = 20*np.log10(Vout[-3:]/Vin[-3:])
-    M = np.ones((y.size, 2))
-    M[:,1] = y
-    params = fit(lambda x,p1,p2: p1+x*p2, x, y)
-    print(params)
-    xline = np.linspace(min(x), max(x), 1000)
-    plt.plot(xline, params[0][0] + params[0][1]*xline)
-    plt.plot(x, y)
-    plt.grid()
-    plt.show()
+    plt.show()    
