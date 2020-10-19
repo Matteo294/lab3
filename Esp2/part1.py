@@ -2,6 +2,7 @@ from libphysics import *
 from matplotlib import pyplot as plt 
 import numpy as np 
 import sys
+from scipy.optimize import curve_fit as fit
 
 file_confA = './misure1/A/data.csv'
 file_confB = './misure1/B/data.csv'
@@ -65,10 +66,7 @@ if parts['A']:
     ax1.set_ylabel(r"Z [$\Omega$]")
     ax1.set_title(r"$Z_{out}$")
     plt.tight_layout()
-    # plt.show()
-
-
-
+    plt.show()
 
 ''' Part B '''
 if parts['B']:
@@ -138,4 +136,17 @@ if parts['C']:
     ax1.set_ylabel(r"Z [$\Omega$]")
     ax1.set_title(r"$Z_{out}$")
     plt.tight_layout()
+    plt.show()
+
+    # Slope estimation
+    x = np.log10(f[-3:])
+    y = 20*np.log10(Vout[-3:]/Vin[-3:])
+    M = np.ones((y.size, 2))
+    M[:,1] = y
+    params = fit(lambda x,p1,p2: p1+x*p2, x, y)
+    print(params)
+    xline = np.linspace(min(x), max(x), 1000)
+    plt.plot(xline, params[0][0] + params[0][1]*xline)
+    plt.plot(x, y)
+    plt.grid()
     plt.show()
