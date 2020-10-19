@@ -47,15 +47,22 @@ if parts['A']:
     f = data[0]
     Vin = data[1]
     Vout = data[2]
-    phi = -data[3]*f * 360 # phase = deltaT/T * 360
+    phi = data[3]*f * 360 # phase = deltaT/T * 360
     fig = bodeplot(f, Amp=Vout/Vin, Phase=phi, deg=True)
+
 
     # Model
     fline = np.logspace(0, 3, 1000)
-    Hline = H_teo(2*np.pi*fline, 1j*2*np.pi*fline)
+    Hline = H_teo(2*np.pi*fline, -1j*2*np.pi*fline)
     Hline_abs = np.absolute(Hline)
     Hline_phase = np.angle(Hline) * 180/np.pi
     fig = bodeplot(fline, Amp=Hline_abs, Phase=Hline_phase, figure=fig, asline=True)
+
+    # plot stile
+    ax = fig.axes[0]
+    handles,_ = ax.get_legend_handles_labels()
+    fig.legend(handles, labels=["Data", "Model"], loc ='lower center', ncol=2)
+    fig.subplots_adjust(hspace=0.4, left=0.1)
     plt.tight_layout()
     plt.show()
 
@@ -94,8 +101,15 @@ if parts['B']:
     Hline_abs = np.absolute(Hline)
     Hline_phase = np.angle(Hline) * 180/np.pi
     fig = bodeplot(fline, Amp=Hline_abs, Phase=Hline_phase, figure=fig, asline=True)
+    
+    # plot stile
+    ax = fig.axes[0]
+    handles,_ = ax.get_legend_handles_labels()
+    fig.legend(handles, labels=["Data", "Model"], loc ='lower center', ncol=2)
+    fig.subplots_adjust(hspace=0.4, left=0.1)
     plt.tight_layout()
     plt.show()
+
 
     # Output impedance
     fig = bodeplot(fline, Amp=np.absolute(Zeq1(2*np.pi*fline)), Phase=np.angle(Zeq1(2*np.pi*fline)), asline=True)
@@ -124,13 +138,20 @@ if parts['C']:
     fig = bodeplot(f, Amp=Vout/Vin, Phase=phi, deg=True)
 
      # Model
-    fline = np.logspace(0, 3, 1000)
+    fline = np.logspace(0, log10(2000), 1000)
     Hline = H_teo(2*np.pi*fline)
     Hline_abs = np.absolute(Hline)
     Hline_phase = np.angle(Hline) * 180/np.pi
     fig = bodeplot(fline, Amp=Hline_abs, Phase=Hline_phase, figure=fig, asline=True)
+    
+    # plot stile
+    ax = fig.axes[0]
+    handles,_ = ax.get_legend_handles_labels()
+    fig.legend(handles, labels=["Data", "Model"], loc ='lower center', ncol=2)
+    fig.subplots_adjust(hspace=0.4, left=0.1)
     plt.tight_layout()
     plt.show()
+
 
     # Output impedance
     fig = bodeplot(fline, Amp=np.absolute(Z_osc(2*np.pi*fline)), Phase=np.angle(Z_osc(2*np.pi*fline)), asline=True)
