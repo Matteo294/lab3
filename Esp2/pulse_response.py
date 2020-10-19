@@ -10,7 +10,12 @@ file_B = "misure1/Pulse_response/B.csv"
 file_C = "misure1/Pulse_response/C.csv"
 file_Shallen = "misure2/Pulse_response/Shallen.csv"
 
-# per mostrare una o più parti
+# to show one or more parts of the analysis
+parts = {
+            'A': False,
+            'B' : False,
+            'C': False
+}
 if len(sys.argv) > 1:
     parts['A'] = False
     parts['B'] = False
@@ -31,26 +36,83 @@ Z_osc = lambda w: parallelo(Z_Cosc(w), Rosc)
 ############# A #############
 
 # load data
-[t, Vin, V] = readCSV(file_A, skiprows=180)
+[t, Vin, V] = readCSV(file_A, skiprows = 185)
 
 # model 
+t_model = t[10:]
 s1 = 1/(tau*2) * (-3 + sqrt(5))
 s2 = 1/(tau*2) * (-3 - sqrt(5))
+t0 = 0.005*1/30     # 0.5% * period = 0.5% * 1/f
 
 def G_A(t):
-    return 1/((tau**2) * (s1-s2)) * (np.exp(s1*t) - np.exp(s2*t))
-
-def G_A_fit(t, a, b, c):
-    return a * (np.exp(b*t) - np.exp(c*t))
-    
-fit = curve_fit(G_A_fit, t, V)  # Vout = G * Vin
-[a, b, c] = fit[0]
-
-print("Valori attesi\n\ts1 = {}\ts2 = {} \ttau = {}\t a = {}".format(s1, s2, tau, 1/((tau**2) * (s1-s2))))
-print("Valori calcolati\n\ts1 = {}\ts2 = {} \ta = {}".format(b, c, a))
+    return 5/((tau**2) * (s1-s2)) * ((1-exp(-s1*t0))*np.exp(s1*t)/s1 - (1-exp(-s2*t0))*np.exp(s2*t)/s2)
 
 # plot 
-plt.plot(t, V)
-plt.plot(t, G_A(t))
-plt.plot(t, G_A_fit(t, a, b, c))
-plt.show()
+if parts['A']:
+    plt.plot(t, V, label="Data", c="red")
+    plt.plot(t_model, G_A(t_model), label="Model", c="k", ls='--')
+
+    plt.title(r"Pulse response -- Low pass filters in series")
+    plt.legend()
+    plt.xlabel(r"$t$ [s]")
+    plt.ylabel(r"$V_{out}$ [V]")
+    plt.grid()
+    plt.tight_layout()
+    plt.show()
+
+
+############# B #############
+
+# load data
+[t, Vin, V] = readCSV(file_B, skiprows=85)
+
+# model 
+t_model = t
+s1 = 1/(tau*2) * (-3 + sqrt(5))
+s2 = 1/(tau*2) * (-3 - sqrt(5))
+t0 = 0.005*1/100    # 0.5% * period = 0.5% * 1/f
+
+def G_A(t):
+    return -5/tau * (t*np.exp(-t/tau)*(1-exp(t0/tau)) + t0*np.exp(-t/tau)*exp(t0/tau)) - 5*np.exp(-t/tau)*(1-exp(t0/tau))
+
+# plot 
+if parts['B']:
+    plt.plot(t, V, label="Data", c="red")
+    plt.plot(t_model, G_A(t_model), label="Model", c="k", ls='--')
+
+    plt.title(r"Pulse response -- Low pass filters with one op-amp")
+    plt.legend()
+    plt.legend()
+    plt.xlabel(r"$t$ [s]")
+    plt.ylabel(r"$V_{out}$ [V]")
+    plt.grid()
+    plt.tight_layout()
+    plt.show()
+
+
+############# C #############
+
+# load data
+[t, Vin, V] = readCSV(file_C, skiprows=250)
+
+# model 
+t_model = t
+s1 = 1/(tau*2) * (-3 + sqrt(5))
+s2 = 1/(tau*2) * (-3 - sqrt(5))
+t0 = 0.005*1/50    # 0.5% * period = 0.5% * 1/f
+
+def G_A(t):
+    return -5/tau * (t*np.exp(-t/tau)*(1-exp(t0/tau)) + t0*np.exp(-t/tau)*exp(t0/tau)) - 5*np.exp(-t/tau)*(1-exp(t0/tau))
+
+# plot 
+if parts['C']:
+    plt.plot(t, V, label="Data", c="red")
+    plt.plot(t_model, G_A(t_model), label="Model", c="k", ls='--')
+    
+    plt.title(r"Pulse response -- Low pass filters with two op-amp")
+    plt.legend()
+    plt.xlabel(r"$t$ [s]")
+    plt.ylabel(r"$V_{out}$ [V]")
+    plt.grid()
+    plt.tight_layout()
+    plt.show()
