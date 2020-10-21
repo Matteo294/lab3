@@ -74,6 +74,15 @@ if parts['A']:
     ax1.set_title(r"$Z_{out}$")
     plt.tight_layout()
     plt.show()
+ 
+    # Amplitudes comparison between configurations
+    idx20 = np.where(f==20)
+    idx50 = np.where(f==50)
+    idx10 = np.where(f==10)
+    idx1000 = np.where(f==1000)
+    idx = [idx20, idx50, idx10]
+    vals = [Vout[i][0]/Vin[i][0] for i in idx]
+    print("Amplitudes at f = 20Hz, 50Hz, 10Hz", 20*np.log10(vals))	
 
 ''' Part B '''
 if parts['B']:
@@ -118,6 +127,14 @@ if parts['B']:
     plt.show()
 
 
+    # Amplitudes comparison between configurations
+    idx20 = np.where(f==20)
+    idx50 = np.where(f==50)
+    idx10 = np.where(f==10)
+    idx1000 = np.where(f==1000)
+    idx = [idx20, idx50, idx10]
+    vals = [Vout[i][0]/Vin[i][0] for i in idx]
+    print("Amplitudes at f = 20Hz, 50Hz, 10Hz", 20*np.log10(vals))	
 
 ''' Part C '''
 if parts['C']:
@@ -148,8 +165,8 @@ if parts['C']:
     M = np.ones((y.size, 2))
     M[:,1] = y
     params = fit(lambda x,p1,p2: p1+np.log10(x)*p2, x, y)
-    print(params[0])
-    xline = np.linspace(min(x), max(x), 1000)
+    print("Slope [dB/decade]", params[0][0])
+    xline = np.linspace(6e1, max(x), 1000)
     
     # plot stile
     ax = fig.axes[0]
@@ -161,7 +178,6 @@ if parts['C']:
     plt.tight_layout()
     plt.show()
 
-
     # Output impedance
     fig = bodeplot(fline, Amp=np.absolute(Z_osc(2*np.pi*fline)), Phase=np.angle(Z_osc(2*np.pi*fline)), asline=True)
     ax1, ax2 = fig.axes
@@ -169,3 +185,11 @@ if parts['C']:
     ax1.set_title(r"$Z_{out}$")
     plt.tight_layout()
     plt.show()    
+    
+    #  Amplitudes comparison between configurations
+    idx20 = np.where(f==20)
+    idx50 = np.where(f==50)
+    idx10 = np.where(f==10)
+    idx = [idx20, idx50, idx10]
+    vals = [Vout[i][0]/Vin[i][0] for i in idx]
+    print("Amplitudes at f = 20Hz, 50Hz, 10Hz", 20*np.log10(vals))	
