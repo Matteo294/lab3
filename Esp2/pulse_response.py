@@ -55,7 +55,7 @@ if parts['A']:
     plt.plot(t, V, label="Data", c="red")
     plt.plot(t_model, G_A(t_model), label="Model", c="k", ls='--')
 
-    plt.title(r"Impulse Response -- Low Pass Filters in Series")
+    plt.title(r"Impulse response -- Conf. A")
     plt.legend()
     plt.xlabel(r"$t$ [s]")
     plt.ylabel(r"$V_{out}$ [V]")
@@ -83,7 +83,7 @@ if parts['B']:
     plt.plot(t, V, label="Data", c="red")
     plt.plot(t_model, G_A(t_model), label="Model", c="k", ls='--')
 
-    plt.title(r"Impulse response -- Low Pass Filters with One Op-amp")
+    plt.title(r"Impulse response -- Conf. B")
     plt.legend()
     plt.legend()
     plt.xlabel(r"$t$ [s]")
@@ -112,7 +112,7 @@ if parts['C']:
     plt.plot(t, V, label="Data", c="red")
     plt.plot(t_model, G_A(t_model), label="Model", c="k", ls='--')
     
-    plt.title(r"Impulse Response -- Low Pass Filters with Two Op-amp")
+    plt.title(r"Impulse response -- Conf. C")
     plt.legend()
     plt.xlabel(r"$t$ [s]")
     plt.ylabel(r"$V_{out}$ [V]")
@@ -140,7 +140,7 @@ if parts['D']:
     plt.plot(t, V, label="Data", c="red")
     plt.plot(t_model, G_A(t_model), label="Model", c="k", ls='--')
     
-    plt.title(r"Impulse Response -- Sallen-Key Filter")
+    plt.title(r"Impulse response -- Sallen-Key")
     plt.legend()
     plt.xlabel(r"$t$ [s]")
     plt.ylabel(r"$V_{out}$ [V]")

@@ -27,3 +27,10 @@ fig.legend(handles, labels=["Data", "Model"], loc ='lower center', ncol=2)
 fig.subplots_adjust(hspace=0.4, left=0.1)
 plt.tight_layout()
 plt.show()
+
+idx20 = np.where(f==20)
+idx50 = np.where(f==50)
+idx10 = np.where(f==10)
+idx = [idx20, idx50, idx10]
+vals = [Vout[i][0]/Vin[i][0] for i in idx]
+print("Amplitudes at f = 20Hz, 50Hz, 10Hz", 20*np.log10(vals))	
