@@ -8,20 +8,23 @@ import sys
 file_A = "misure1/Pulse_response/A.csv"
 file_B = "misure1/Pulse_response/B.csv"
 file_C = "misure1/Pulse_response/C.csv"
+file_D = "misure2/Pulse_response/Shallen.csv"
 file_Shallen = "misure2/Pulse_response/Shallen.csv"
 
 # to show one or more parts of the analysis
 parts = {
             'A': False,
             'B' : False,
-            'C': False
+            'C': False,
+            'D': False
 }
 if len(sys.argv) > 1:
     parts['A'] = False
     parts['B'] = False
     parts['C'] = False
+    parts['D'] = False
     for arg in sys.argv[1:]:
-        if arg in ['A', 'B', 'C']:
+        if arg in ['A', 'B', 'C', 'D']:
             parts[arg] = True
 
 Rosc = 1e6
@@ -52,7 +55,7 @@ if parts['A']:
     plt.plot(t, V, label="Data", c="red")
     plt.plot(t_model, G_A(t_model), label="Model", c="k", ls='--')
 
-    plt.title(r"Pulse response -- Low pass filters in series")
+    plt.title(r"Impulse Response -- Low Pass Filters in Series")
     plt.legend()
     plt.xlabel(r"$t$ [s]")
     plt.ylabel(r"$V_{out}$ [V]")
@@ -80,7 +83,7 @@ if parts['B']:
     plt.plot(t, V, label="Data", c="red")
     plt.plot(t_model, G_A(t_model), label="Model", c="k", ls='--')
 
-    plt.title(r"Pulse response -- Low pass filters with one op-amp")
+    plt.title(r"Impulse response -- Low Pass Filters with One Op-amp")
     plt.legend()
     plt.legend()
     plt.xlabel(r"$t$ [s]")
@@ -109,7 +112,35 @@ if parts['C']:
     plt.plot(t, V, label="Data", c="red")
     plt.plot(t_model, G_A(t_model), label="Model", c="k", ls='--')
     
-    plt.title(r"Pulse response -- Low pass filters with two op-amp")
+    plt.title(r"Impulse Response -- Low Pass Filters with Two Op-amp")
+    plt.legend()
+    plt.xlabel(r"$t$ [s]")
+    plt.ylabel(r"$V_{out}$ [V]")
+    plt.grid()
+    plt.tight_layout()
+    plt.show()
+
+
+############# D - SALLEN-KEY #############
+
+# load data
+[t, Vin, V] = readCSV(file_D, skiprows=163)
+
+# model 
+t_model = t[30:]
+s1 = 1/(tau*2) * (-3 + sqrt(5))
+s2 = 1/(tau*2) * (-3 - sqrt(5))
+t0 = 0.005*1/50    # 0.5% * period = 0.5% * 1/f
+
+def G_A(t):
+    return -5/tau * (t*np.exp(-t/tau)*(1-exp(t0/tau)) + t0*np.exp(-t/tau)*exp(t0/tau)) - 5*np.exp(-t/tau)*(1-exp(t0/tau))
+
+# plot 
+if parts['D']:
+    plt.plot(t, V, label="Data", c="red")
+    plt.plot(t_model, G_A(t_model), label="Model", c="k", ls='--')
+    
+    plt.title(r"Impulse Response -- Sallen-Key Filter")
     plt.legend()
     plt.xlabel(r"$t$ [s]")
     plt.ylabel(r"$V_{out}$ [V]")
