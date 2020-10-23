@@ -2,6 +2,7 @@ from libphysics import *
 from matplotlib import pyplot as plt 
 import numpy as np 
 import sys
+from scipy.optimize import curve_fit as fit
 
 file_confA = './misure1/A/data.csv'
 file_confB = './misure1/B/data.csv'
@@ -72,10 +73,16 @@ if parts['A']:
     ax1.set_ylabel(r"Z [$\Omega$]")
     ax1.set_title(r"$Z_{out}$")
     plt.tight_layout()
-    # plt.show()
-
-
-
+    plt.show()
+ 
+    # Amplitudes comparison between configurations
+    idx20 = np.where(f==20)
+    idx50 = np.where(f==50)
+    idx10 = np.where(f==10)
+    idx1000 = np.where(f==1000)
+    idx = [idx20, idx50, idx10]
+    vals = [Vout[i][0]/Vin[i][0] for i in idx]
+    print("Amplitudes at f = 20Hz, 50Hz, 10Hz", 20*np.log10(vals))	
 
 ''' Part B '''
 if parts['B']:
@@ -120,6 +127,14 @@ if parts['B']:
     plt.show()
 
 
+    # Amplitudes comparison between configurations
+    idx20 = np.where(f==20)
+    idx50 = np.where(f==50)
+    idx10 = np.where(f==10)
+    idx1000 = np.where(f==1000)
+    idx = [idx20, idx50, idx10]
+    vals = [Vout[i][0]/Vin[i][0] for i in idx]
+    print("Amplitudes at f = 20Hz, 50Hz, 10Hz", 20*np.log10(vals))	
 
 ''' Part C '''
 if parts['C']:
@@ -137,21 +152,31 @@ if parts['C']:
     phi = -data[3]*f * 360 # phase = deltaT/T * 360
     fig = bodeplot(f, Amp=Vout/Vin, Phase=phi, deg=True)
 
-     # Model
+    # Model
     fline = np.logspace(0, log10(2000), 1000)
     Hline = H_teo(2*np.pi*fline)
     Hline_abs = np.absolute(Hline)
     Hline_phase = np.angle(Hline) * 180/np.pi
     fig = bodeplot(fline, Amp=Hline_abs, Phase=Hline_phase, figure=fig, asline=True)
+
+    # Slope estimation
+    x = f[-3:]
+    y = 20*np.log10(Vout[-3:]/Vin[-3:])
+    M = np.ones((y.size, 2))
+    M[:,1] = y
+    params = fit(lambda x,p1,p2: p1+np.log10(x)*p2, x, y)
+    print("Slope [dB/decade]", params[0][0])
+    xline = np.linspace(6e1, max(x), 1000)
     
     # plot stile
     ax = fig.axes[0]
     handles,_ = ax.get_legend_handles_labels()
     fig.legend(handles, labels=["Data", "Model"], loc ='lower center', ncol=2)
     fig.subplots_adjust(hspace=0.4, left=0.1)
+    ax.plot(xline, params[0][0] + params[0][1]*np.log10(xline), '--')
+    plt.plot()
     plt.tight_layout()
     plt.show()
-
 
     # Output impedance
     fig = bodeplot(fline, Amp=np.absolute(Z_osc(2*np.pi*fline)), Phase=np.angle(Z_osc(2*np.pi*fline)), asline=True)
@@ -159,4 +184,12 @@ if parts['C']:
     ax1.set_ylabel(r"Z [$\Omega$]")
     ax1.set_title(r"$Z_{out}$")
     plt.tight_layout()
-    plt.show()
+    plt.show()    
+    
+    #  Amplitudes comparison between configurations
+    idx20 = np.where(f==20)
+    idx50 = np.where(f==50)
+    idx10 = np.where(f==10)
+    idx = [idx20, idx50, idx10]
+    vals = [Vout[i][0]/Vin[i][0] for i in idx]
+    print("Amplitudes at f = 20Hz, 50Hz, 10Hz", 20*np.log10(vals))	
