@@ -12,7 +12,7 @@ w0 = 1/(R*C)
 
 # ciclo sugli epsilon
 y = []      # vettore dove metterò 1/tau stimato
-eps = numpify([1e-4, 1e-2, 1e-1])
+eps = numpify([1e-4, 1e-3, 1e-2, 1e-1])
 x = eps/(1+eps)
 n = len(eps)
 
@@ -20,7 +20,7 @@ def exp_func (t, k, a):
     return a*np.exp(-t*k) # k è 1/tau
 
 for i in range(n-1):
-    file = "Data/1/e" + str(i+1) + ".csv"
+    file = "Newdata/eps" + str(i+1) + ".csv"
     # load data
     [t, V] = readCSV(file, skiprows=1)
     # fit with exponential
@@ -29,5 +29,5 @@ for i in range(n-1):
     y.append(k)
 
 
-plt.plot(x[:2]*w0, y)
+plt.plot(x*w0, y)
 plt.show()
