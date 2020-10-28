@@ -19,15 +19,24 @@ n = len(eps)
 def exp_func (t, k, a):
     return a*np.exp(-t*k) # k è 1/tau
 
-for i in range(n-1):
+for i in range(n):
     file = "Newdata/eps" + str(i+1) + ".csv"
     # load data
+    print(i)
     [t, V] = readCSV(file, skiprows=1)
+    t = numpify(t) - t[0]
     # fit with exponential
     fit = curve_fit(exp_func, t, V)
     [k, a] = fit[0]
+    if(i==0):
+        tpoints = np.linspace(0, 1)
+        plt.scatter(t, V, label="Data")
+        plt.plot(tpoints, exp_func(tpoints, k, a), label="Fit")
+        plt.legend()
+        plt.show()
     y.append(k)
 
+y = numpify(y)
 
-plt.plot(x*w0, y)
+plt.scatter(x*w0, y)
 plt.show()
