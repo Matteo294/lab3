@@ -87,7 +87,7 @@ if parts['A']:
 ''' Part B '''
 if parts['B']:
     # Impedances
-    Z_C = lambda w: 1/(1j*w*C)
+    Z_C = lambda w: 1/(-1j*w*C)
     H0 = lambda w: Z_C(w) / (Z_C(w) + R) # Just a useful intermediate step
     Zeq1 = lambda w: parallelo(Z_C(w), Z_osc(w))
     
@@ -99,7 +99,7 @@ if parts['B']:
     f = data[0]
     Vin = data[1]
     Vout = data[2]
-    phi = -data[3]*f * 360 # phase = deltaT/T * 360
+    phi = data[3]*f * 360 # phase = deltaT/T * 360
     fig = bodeplot(f, Amp=Vout/Vin, Phase=phi, deg=True)
 
      # Model
