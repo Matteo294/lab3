@@ -37,14 +37,19 @@ for i in range(n):
         plt.show()
     y.append(k)
 
-y = numpify(y)
+y = numpify(y) # y = 1/tau
 
 ################ MODEL ################
-x_teo = np.logspace(-6, -1)
-y_teo = x_teo*w0    # 1/tau = eps/(1+eps) *w0
+x_teo = np.linspace(0, 1e-1)
 
-plt.semilogx(x_teo, y_teo, c='k', label="Data")
-plt.scatter(x, y, c="red", label="Model")
+def y_teo (e, r0):
+    return w0*(e+e*r0+r0)/(1+e)
+
+fit = curve_fit(y_teo, eps, y)
+[r0] = fit[0]
+
+plt.plot(x_teo, y_teo(x_teo, r0), c='k', label="Model")
+plt.scatter(x, y, c="red", label="Data")
 plt.legend()
 plt.xlabel(r"$\frac{\epsilon}{1+\epsilon}$")
 plt.ylabel(r"$1/\tau$")
