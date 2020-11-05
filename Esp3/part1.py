@@ -43,7 +43,7 @@ y = numpify(y) # y = 1/tau
 x_teo = np.linspace(0, 1e-1)
 
 def y_teo (e, r0):
-    return w0*(e+e*r0+r0)/(1+e)
+    return w0*(e/(1+e)+r0)
 
 fit = curve_fit(y_teo, eps, y)
 [r0] = fit[0]
