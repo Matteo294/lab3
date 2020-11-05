@@ -40,15 +40,15 @@ for i in range(n):
 y = numpify(y) # y = 1/tau
 
 ################ MODEL ################
-x_teo = np.linspace(0, 1e-1)
+eps_teo = np.linspace(0, 1e-1)
 
 def y_teo (e, r0):
-    return w0*(e/(1+e)+r0)
+    return w0*(e/(1+e) + r0)  
 
 fit = curve_fit(y_teo, eps, y)
 [r0] = fit[0]
 
-plt.plot(x_teo, y_teo(x_teo, r0), c='k', label="Model")
+plt.plot(eps_teo/(1+eps_teo), y_teo(eps_teo, r0), c='k', label="Model")
 plt.scatter(x, y, c="red", label="Data")
 plt.legend()
 plt.xlabel(r"$\frac{\epsilon}{1+\epsilon}$")
