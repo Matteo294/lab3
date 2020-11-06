@@ -7,7 +7,7 @@ from scipy.optimize import curve_fit
 R = 100e3
 C = 10e-9
 R2 = 100
-w0 = 1/(R*C)
+w0 = 1/(R*C)*1e-1
 # R1 variabile
 
 # ciclo sugli epsilon
@@ -40,7 +40,8 @@ for i in range(n):
 y = numpify(y) # y = 1/tau
 
 ################ MODEL ################
-eps_teo = np.linspace(0, 1e-1)
+eps_log = np.logspace(-4, -1)
+eps_lin = np.linspace(1e-4, 1e-1)
 
 def y_teo (e, r0):
     return w0*(e/(1+e) + r0)  
@@ -48,10 +49,23 @@ def y_teo (e, r0):
 fit = curve_fit(y_teo, eps, y)
 [r0] = fit[0]
 
-plt.plot(eps_teo/(1+eps_teo), y_teo(eps_teo, r0), c='k', label="Model")
+############### PLOTS ##################
+
+plt.subplot(1, 2, 1)
+plt.plot(eps_lin/(1+eps_lin), y_teo(eps_lin, r0), c='k', label="Model")
 plt.scatter(x, y, c="red", label="Data")
 plt.legend()
 plt.xlabel(r"$\frac{\epsilon}{1+\epsilon}$")
 plt.ylabel(r"$1/\tau$")
+plt.title("Linear scale")
+
+plt.subplot(1, 2, 2)
+plt.semilogx(eps_log/(1+eps_log), y_teo(eps_log, r0), c='k', label="Model")
+plt.scatter(x, y, c="red", label="Data")
+plt.legend()
+plt.xlabel(r"$\frac{\epsilon}{1+\epsilon}$")
+plt.ylabel(r"$1/\tau$")
+plt.title("Log scale")
+
 plt.tight_layout()
 plt.show()
