@@ -1,100 +1,195 @@
 from libphysics import *
-import numpy as np
-from math import *
-from scipy.optimize import curve_fit
+from matplotlib import pyplot as plt 
+import numpy as np 
+import sys
+from scipy.optimize import curve_fit as fit
 
-# valori componenti
+file_confA = './misure1/A/data.csv'
+file_confB = './misure1/B/data.csv'
+file_confC = './misure1/C/data.csv'
+
+parts = {
+            'A': True,
+            'B' : False,
+            'C': False
+}
+
+if len(sys.argv) > 1:
+    parts['A'] = False
+    parts['B'] = False
+    parts['C'] = False
+    for arg in sys.argv[1:]:
+        if arg in ['A', 'B', 'C']:
+            parts[arg] = True
+
+parallelo = lambda Z1, Z2: Z1*Z2/(Z1+Z2)
+
+Rosc = 1e6
+Cosc = 120e-12
 R = 100e3
 C = 10e-9
-R2 = 100
-w0 = 1/(R*C)
-# R1 variabile
 
-# ciclo sugli epsilon
-y = []      # vettore dove metterò 1/tau stimato
-eps = numpify([1e-4, 1e-3, 1e-2, 1e-1])*1e-1
-x = numpify(eps/(1+eps))
-n = len(eps)
+Z_Cosc = lambda w: 1/(1j*w*Cosc)
+Z_osc = lambda w: parallelo(Z_Cosc(w), Rosc)
 
-################ DATA ################
+''' Part A '''
+if parts['A']:
+    # Impedances
+    Z_C = lambda w: 1/(1j*w*C)
+    Zeq1 = lambda w: parallelo(Z_C(w), (R + Zeq2(w)))
+    Zeq2 = lambda w: parallelo(Z_C(w), Z_osc(w))
+    Z_out = lambda w: parallelo(Z_C(w), R + parallelo(R, Z_C(w)))
 
-def exp_func (t, k, a):
-    return a*np.exp(-t*k) # k è 1/tau
+    # Transfer function
+    H_teo = lambda w,s: 1/(1 + 3*R*s*C + (R*s*C)**2)  # devo ancora metterci l'osc
 
-for i in range(n):
-    file = "Newdata/eps" + str(i+1) + ".csv"
-    # load data
-    [t, V] = readCSV(file, skiprows=1)
-    t = numpify(t) - t[0]
-    # fit with exponential
-    fit = curve_fit(exp_func, t, V)
-    [k, a] = fit[0]
-    if(i==-1):
-        tpoints = np.linspace(0, 1)
-        plt.scatter(t, V, label="Data")
-        plt.plot(tpoints, exp_func(tpoints, k, a), label="Fit")
-        plt.legend()
-        plt.show()
-    y.append(k)
-
-y = numpify(y) # y = 1/tau
-
-################ MODEL ################
-eps_log = np.logspace(-5, -2)
-eps_lin = np.linspace(1e-4, 1e-1)
-
-def y_teo (e, r0):
-    return w0*(e/(1+e) + r0)  
+    # Getting data from csv
+    data = readCSV(file_confA, skiprows=1, cols=[0,1,2,3])
+    f = data[0]
+    Vin = data[1]
+    Vout = data[2]
+    phi = data[3]*f * 360 # phase = deltaT/T * 360
+    fig = bodeplot(f, Amp=Vout/Vin, Phase=phi, deg=True)
 
 
-# model without r0
+    # Model
+    fline = np.logspace(0, 3, 1000)
+    Hline = H_teo(2*np.pi*fline, -1j*2*np.pi*fline)
+    Hline_abs = np.absolute(Hline)
+    Hline_phase = np.angle(Hline) * 180/np.pi
+    fig = bodeplot(fline, Amp=Hline_abs, Phase=Hline_phase, figure=fig, asline=True)
 
-############### PLOTS ##################
+    # plot stile
+    ax = fig.axes[0]
+    handles,_ = ax.get_legend_handles_labels()
+    fig.legend(handles, labels=["Data", "Model"], loc ='lower center', ncol=2)
+    fig.subplots_adjust(hspace=0.4, left=0.1)
+    plt.tight_layout()
+    plt.show()
 
-plt.subplot(1, 2, 1)
-plt.plot(eps_lin/(1+eps_lin), y_teo(eps_lin, 0), c='k', label="Model")
-plt.scatter(x, y, c="red", label="Data")
-plt.legend()
-plt.xlabel(r"$\frac{\epsilon}{1+\epsilon}$")
-plt.ylabel(r"$1/\tau_D~[s^{-1}]$")
-plt.title("Linear scale")
+    # Output impedance
+    fig = bodeplot(fline, Amp=Z_out(2*np.pi*fline), Phase=Hline_phase, asline=True)
+    ax1, ax2 = fig.axes
+    ax1.set_ylabel(r"Z [$\Omega$]")
+    ax1.set_title(r"$Z_{out}$")
+    plt.tight_layout()
+    plt.show()
+ 
+    # Amplitudes comparison between configurations
+    idx20 = np.where(f==20)
+    idx50 = np.where(f==50)
+    idx10 = np.where(f==10)
+    idx1000 = np.where(f==1000)
+    idx = [idx20, idx50, idx10]
+    vals = [Vout[i][0]/Vin[i][0] for i in idx]
+    print("Amplitudes at f = 20Hz, 50Hz, 10Hz", 20*np.log10(vals))	
 
-plt.subplot(1, 2, 2)
-plt.semilogx(eps_log/(1+eps_log), y_teo(eps_log, 0), c='k', label="Model")
-plt.scatter(x, y, c="red", label="Data")
-plt.legend()
-plt.xlabel(r"$\frac{\epsilon}{1+\epsilon}$")
-plt.ylabel(r"$1/\tau_D~[s^{-1}]$")
-plt.title("Log scale")
+''' Part B '''
+if parts['B']:
+    # Impedances
+    Z_C = lambda w: 1/(1j*w*C)
+    H0 = lambda w: Z_C(w) / (Z_C(w) + R) # Just a useful intermediate step
+    Zeq1 = lambda w: parallelo(Z_C(w), Z_osc(w))
+    
+    # Transfer function
+    H_teo = lambda w: H0(w) * Zeq1(w)/(Zeq1(w)+R)
 
-plt.tight_layout()
-plt.show()
+    # Getting data from csv
+    data = readCSV(file_confB, skiprows=1, cols=[0,1,2,3])
+    f = data[0]
+    Vin = data[1]
+    Vout = data[2]
+    phi = -data[3]*f * 360 # phase = deltaT/T * 360
+    fig = bodeplot(f, Amp=Vout/Vin, Phase=phi, deg=True)
+
+     # Model
+    fline = np.logspace(0, 3, 1000)
+    Hline = H_teo(2*np.pi*fline)
+    Hline_abs = np.absolute(Hline)
+    Hline_phase = np.angle(Hline) * 180/np.pi
+    fig = bodeplot(fline, Amp=Hline_abs, Phase=Hline_phase, figure=fig, asline=True)
+    
+    # plot stile
+    ax = fig.axes[0]
+    handles,_ = ax.get_legend_handles_labels()
+    fig.legend(handles, labels=["Data", "Model"], loc ='lower center', ncol=2)
+    fig.subplots_adjust(hspace=0.4, left=0.1)
+    plt.tight_layout()
+    plt.show()
 
 
-# model with r0
-fit = curve_fit(y_teo, eps, y)
-[r0] = fit[0]
+    # Output impedance
+    fig = bodeplot(fline, Amp=np.absolute(Zeq1(2*np.pi*fline)), Phase=np.angle(Zeq1(2*np.pi*fline)), asline=True)
+    ax1, ax2 = fig.axes
+    ax1.set_ylabel(r"Z [$\Omega$]")
+    ax1.set_title(r"$Z_{out}$")
+    plt.tight_layout()
+    plt.show()
 
-print("r0 = {}".format(r0*w0))
-print("quando epsilon = 0 -> tau = {}".format(1/(r0*w0)))
 
-############### PLOTS ##################
+    # Amplitudes comparison between configurations
+    idx20 = np.where(f==20)
+    idx50 = np.where(f==50)
+    idx10 = np.where(f==10)
+    idx1000 = np.where(f==1000)
+    idx = [idx20, idx50, idx10]
+    vals = [Vout[i][0]/Vin[i][0] for i in idx]
+    print("Amplitudes at f = 20Hz, 50Hz, 10Hz", 20*np.log10(vals))	
 
-plt.subplot(1, 2, 1)
-plt.plot(eps_lin/(1+eps_lin), y_teo(eps_lin, r0), c='k', label="Model")
-plt.scatter(x, y, c="red", label="Data")
-plt.legend()
-plt.xlabel(r"$\frac{\epsilon}{1+\epsilon}$")
-plt.ylabel(r"$1/\tau_D~[s^{-1}]$")
-plt.title("Linear scale")
+''' Part C '''
+if parts['C']:
+    # Impedances
+    Z_C = lambda w: 1/(1j*w*C)
+    H0 = lambda w: Z_C(w) / (Z_C(w) + R) # Just a useful intermediate step
+    # Transfer function
+    H_teo = lambda w: np.power(H0(w), 2)
 
-plt.subplot(1, 2, 2)
-plt.semilogx(eps_log/(1+eps_log), y_teo(eps_log, r0), c='k', label="Model")
-plt.scatter(x, y, c="red", label="Data")
-plt.legend()
-plt.xlabel(r"$\frac{\epsilon}{1+\epsilon}$")
-plt.ylabel(r"$1/\tau_D~[s^{-1}]$")
-plt.title("Log scale")
+    # Getting data from csv
+    data = readCSV(file_confC, skiprows=1, cols=[0,1,2,3])
+    f = data[0]
+    Vin = data[1]
+    Vout = data[2]
+    phi = -data[3]*f * 360 # phase = deltaT/T * 360
+    fig = bodeplot(f, Amp=Vout/Vin, Phase=phi, deg=True)
 
-plt.tight_layout()
-plt.show()
+    # Model
+    fline = np.logspace(0, log10(2000), 1000)
+    Hline = H_teo(2*np.pi*fline)
+    Hline_abs = np.absolute(Hline)
+    Hline_phase = np.angle(Hline) * 180/np.pi
+    fig = bodeplot(fline, Amp=Hline_abs, Phase=Hline_phase, figure=fig, asline=True)
+
+    # Slope estimation
+    x = f[-3:]
+    y = 20*np.log10(Vout[-3:]/Vin[-3:])
+    M = np.ones((y.size, 2))
+    M[:,1] = y
+    params = fit(lambda x,p1,p2: p1+np.log10(x)*p2, x, y)
+    print("Slope [dB/decade]", params[0][0])
+    xline = np.linspace(6e1, max(x), 1000)
+    
+    # plot stile
+    ax = fig.axes[0]
+    handles,_ = ax.get_legend_handles_labels()
+    fig.legend(handles, labels=["Data", "Model"], loc ='lower center', ncol=2)
+    fig.subplots_adjust(hspace=0.4, left=0.1)
+    ax.plot(xline, params[0][0] + params[0][1]*np.log10(xline), '--')
+    plt.plot()
+    plt.tight_layout()
+    plt.show()
+
+    # Output impedance
+    fig = bodeplot(fline, Amp=np.absolute(Z_osc(2*np.pi*fline)), Phase=np.angle(Z_osc(2*np.pi*fline)), asline=True)
+    ax1, ax2 = fig.axes
+    ax1.set_ylabel(r"Z [$\Omega$]")
+    ax1.set_title(r"$Z_{out}$")
+    plt.tight_layout()
+    plt.show()    
+    
+    #  Amplitudes comparison between configurations
+    idx20 = np.where(f==20)
+    idx50 = np.where(f==50)
+    idx10 = np.where(f==10)
+    idx = [idx20, idx50, idx10]
+    vals = [Vout[i][0]/Vin[i][0] for i in idx]
+    print("Amplitudes at f = 20Hz, 50Hz, 10Hz", 20*np.log10(vals))	
