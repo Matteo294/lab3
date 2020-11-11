@@ -3,8 +3,7 @@ from matplotlib import pyplot as plt
 import libphysics as lp 
 
 for i in range(3):
-    time, V1, V2 
-    = lp.readCSV('Waveforms/Sine/scope_' + str(i) + '.csv', skiprows=3)
+    time, V1, V2 = lp.readCSV('Waveforms/Sine/scope_' + str(i) + '.csv', skiprows=3)
     fcamp = 1.067e3 # sampling frequency 1kHz
     Tcamp = 1/fcamp
     time = time[10:] # skip some points
