@@ -22,9 +22,11 @@ for i in range(4):
     print("Measured frequency =", 1/deltat_arr[i], "(expected %1f)" %(ws/(2*np.pi)))
     
     # I use lambdas to change fit parameters (in this case I decided to set w and fit phi)
-    params = fit(lambda t, A, phi1, B, phi2, C: func(t, ws, A, phi1, B, phi2, C), t, V) 
+    params = fit(lambda t, A, phi1, B, phi2, C: func(t, ws, A, phi1, B, phi2, C), t, V, p0=[1, 3*np.pi/4, 1, 3*np.pi/4, 0]) 
     A, phi1, B, phi2, C = params[0]
-    
+
+    print("A = %.2f \t phi1 = %.2f \t B = %.2f \t phi2 = %.2f \t C = %.2f" %(A, phi1 % (2*np.pi), B/ws, phi2 % (2*np.pi), C))
+    print("Coefficient ratio (x100) %.2f" %(100*B/ws*A))
     
     plt.subplot(121)
     plt.plot(t*1000, V, color='royalblue', linewidth=2.0, label='Experimental data')
