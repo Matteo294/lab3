@@ -1,24 +1,41 @@
-import numpy as np 
-from matplotlib import pyplot as plt 
-import libphysics as lp 
+from libphysics import *
+from sample import sample
+from math import *
 
-for i in range(3):
-    time, V1, V2 = lp.readCSV('Waveforms/Sine/scope_' + str(i) + '.csv', skiprows=3)
-    fcamp = 1.067e3 # sampling frequency 1kHz
-    Tcamp = 1/fcamp
-    time = time[10:] # skip some points
-    V1 = V1[10:]
-    V2 = V2[10:]
-    time -= time[0]
-    period_idx = (np.where( abs(time-Tcamp) == min(abs(time-Tcamp)))[0]).item()
-    Tcamp = time[period_idx]
-    N = int(time[-1]/Tcamp) # number of samples
-    t = [k*Tcamp for k in range(N)] # sampling times
-    idx = [k*period_idx for k in range(N)]
+files = ['Waveforms/Sine/scope_' + str(i) + '.csv' for i in range(4)]
+eps = [0.3, 0.5, 0.6, 0.7]
+f = [50, 100, 200, 900]
+titles = ["f = " + str(freq) + " Hz" for freq in f]
+for (i, f) in enumerate(files):
+    #---------------------------------------
+    # USE THE SAMPLING FUNCTION
+    t, V, ts, Vs = sample(f, eps[i])
 
-    V = V2[idx]
+    # plt.plot(t, V, c='k')
+    # plt.scatter(ts, Vs, c='r')
+    # plt.show()
 
-    plt.plot(time, V1)
-    plt.plot(time, V2)
-    plt.plot(t, V, '.', markersize=16)
+    #----------------------------------------
+    # RECONSTRUCT THE FUNCTION WITH SINC
+    dts = numpify([ts[i+1]-ts[i] for i in range(len(ts)-1)]) # find sampling period by averaging over the time intervals
+    Ts = np.average(dts)
+    fs = 1/Ts
+
+    ksinc = lambda x: np.sin(pi*x/Ts)/ (pi*x/Ts)
+
+    n = np.arange(len(Vs))
+
+    r = lambda t: np.sum(Vs * ksinc(t - n*Ts))
+
+    t_line = np.linspace(t[0], t[-1], 5000)
+    r = numpify([r(t) for t in t_line])
+
+    plt.plot(t, V, c='k')
+    plt.scatter(ts, Vs, c='r')
+    plt.plot(t_line, r)
+    plt.title(titles[i])
     plt.show()
+
+    
+
+
