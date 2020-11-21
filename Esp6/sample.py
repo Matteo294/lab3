@@ -24,6 +24,7 @@ def sample(file, eps):
     for idx in toremove:
         t = np.delete(t, idx)
         V = np.delete(V, idx)
+        Vin = np.delete(Vin, idx)
     #------------------------------------------------
     # FIND THE VALUE OF THE SAMPLES
     i = 0
@@ -44,4 +45,4 @@ def sample(file, eps):
     ts = numpify(ts)
     samples = numpify(samples)
 
-    return t, V, ts, samples
+    return t, Vin, V, ts, samples
