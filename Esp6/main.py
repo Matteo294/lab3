@@ -17,12 +17,11 @@ titles = [r"$f = $" + str(freq) + " Hz" for freq in f]
 #--------------------------------------------------
 # DEFINE THE FIGURES AND SOME VARS FOR FIGURES
 idx_for_subplots = [(0,0), (0,1), (1, 0), (1,1)]
-fig_sine_sinc = plt.figure(1)
-fig_sine_lin = plt.figure(2)
-# fig_triang_sinc = plt.figure(3)
-# fig_triang_lin = plt.figure(4)
+fig_sine_sinc = plt.figure(2)
+fig_sine_lin = plt.figure(3)
 gs_sine_sinc = fig_sine_sinc.add_gridspec(2, 2)
 gs_sine_lin = fig_sine_lin.add_gridspec(2, 2)
+fig_sh = plt.figure(1)
 
 
 for (i, file) in enumerate(files_sine):
@@ -31,6 +30,16 @@ for (i, file) in enumerate(files_sine):
     t, Vin, V, ts, Vs = sample(file, eps[i])
     t = t - ts[0]
     ts = ts - ts[0]
+    if i == 1:
+        plt.figure(1)
+        plt.plot(t, Vin, label="Signal", c='k')
+        plt.plot(t, V, label=r"S\&H", c='r')
+        plt.plot(ts, Vs, '.', ms=16, label="Recognized samples", c='royalblue')
+        plt.xlabel(r"$t$ [s]")
+        plt.ylabel(r"[V]")
+        plt.legend(bbox_to_anchor=(0.9, -0.3), ncol=3)
+        plt.tight_layout()
+        plt.show()
     #--------------------------------------------------
     #--------------------------------------------------
     # RECONSTRUCT THE FUNCTION
@@ -90,8 +99,8 @@ titles = [r"$f = $" + str(freq) + " Hz" for freq in f]
 #--------------------------------------------------
 # DEFINE THE FIGURES AND SOME VARS FOR FIGURES
 idx_for_subplots = [(0,0), (0,1), (1, 0), (1,1)]
-fig_triang_sinc = plt.figure(3)
-fig_triang_lin = plt.figure(4)
+fig_triang_sinc = plt.figure(4)
+fig_triang_lin = plt.figure(5)
 gs_triang_sinc = fig_triang_sinc.add_gridspec(2, 2)
 gs_triang_lin = fig_triang_lin.add_gridspec(2, 2)
 
