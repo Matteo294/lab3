@@ -2,6 +2,7 @@ from libphysics import *
 from sample import sample
 from math import *
 import sys
+from scipy.optimize import curve_fit
 
 #--------------------------------------------------
 # SAMPLING OF SINUSOIDAL WAVES
@@ -53,6 +54,17 @@ for (i, file) in enumerate(files_sine):
     ksinc = lambda x: np.sin(pi*x/Ts)/ (pi*x/Ts)
     r_sinc = lambda t: np.sum(Vs * ksinc(t - n*Ts))
     r_sinc = numpify([r_sinc(t) for t in t_line])
+
+    # # extract frequency for the aliasing of the 900 hertz signal
+    # sinefit = lambda x, A, w: np.sin(w*x) + A*np.cos(w*x)
+    # if i == 3:
+    #     fit = curve_fit(sinefit, t_line[1000:4000], r_sinc[1000:4000])
+    #     [A, w] = fit[0]
+    #     print("\nSine wave at 900 Hz: the frequency of the reconstructed function is {} Hz".format(w/(2*pi)))
+    #     plt.figure()
+    #     plt.plot(t_line, r_sinc)
+    #     plt.plot(t_line[1000:4000], sinefit(t_line[1000:4000], A, w))
+    #     plt.show()
     #--------------------------------------------------
     # WITH LINEAR KERNEL
     def klin(x):
@@ -72,7 +84,7 @@ for (i, file) in enumerate(files_sine):
     plot_sinc = fig_sine_sinc.add_subplot(gs_sine_sinc[idx_for_subplots[i]])
     psignal_s, = plot_sinc.plot(t, Vin, c ='gray', lw=1.5,label = "Signal")
     psample_s, =  plot_sinc.plot(ts, Vs, '.', markersize=7, c='black', label="Samples")
-    palias_s, = plot_sinc.plot(t_line, r_sinc, c='red', label="Aliasing")
+    palias_s, = plot_sinc.plot(t_line, r_sinc, c='red', label="Reconstruction")
     plot_sinc.set_title(titles[i])
     plot_sinc.set_xlabel(r"$t$ [s]")
     plot_sinc.set_ylabel(r"[V]")
@@ -81,7 +93,7 @@ for (i, file) in enumerate(files_sine):
     plot_lin = fig_sine_lin.add_subplot(gs_sine_lin[idx_for_subplots[i]])
     psignal_l, = plot_lin.plot(t, Vin, c ='gray', lw=1.5, label = "Signal")
     psample_l, =  plot_lin.plot(ts, Vs, '.', markersize=5, c='k', label="Samples")
-    palias_l, = plot_lin.plot(t_line, r_lin, c='red', label="Aliasing")
+    palias_l, = plot_lin.plot(t_line, r_lin, c='red', label="Reconstruction")
     plot_lin.set_title(titles[i])
     plot_lin.set_xlabel(r"$t$ [s]")
     plot_lin.set_ylabel(r"[V]")
@@ -151,7 +163,7 @@ for (i, file) in enumerate(files_triang):
     psignal_s, = plot_sinc.plot(t, Vin, c ='gray', lw=1.5,label = "Signal")
     # ptest_s = plot_sinc.plot(t, V, c ='blue', lw=1.5,label = "Original Sampling") uncomment to see the original sampling wave (square wave)
     psample_s, =  plot_sinc.plot(ts, Vs, '.', markersize=7, c='black', label="Samples")
-    palias_s, = plot_sinc.plot(t_line, r_sinc, c='red', label="Aliasing")
+    palias_s, = plot_sinc.plot(t_line, r_sinc, c='red', label="Reconstruction")
     plot_sinc.set_title(titles[i])
     plot_sinc.set_xlabel(r"$t$ [s]")
     plot_sinc.set_ylabel(r"[V]")
@@ -160,7 +172,7 @@ for (i, file) in enumerate(files_triang):
     plot_lin = fig_triang_lin.add_subplot(gs_sine_lin[idx_for_subplots[i]])
     psignal_l, = plot_lin.plot(t, Vin, c ='gray', lw=1.5, label = "Signal")
     psample_l, =  plot_lin.plot(ts, Vs, '.', markersize=5, c='k', label="Samples")
-    palias_l, = plot_lin.plot(t_line, r_lin, c='red', label="Aliasing")
+    palias_l, = plot_lin.plot(t_line, r_lin, c='red', label="Reconstruction")
     plot_lin.set_title(titles[i])
     plot_lin.set_xlabel(r"$t$ [s]")
     plot_lin.set_ylabel(r"[V]")
